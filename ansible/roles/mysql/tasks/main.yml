@@ -1,6 +1,6 @@
 ---
 - name: Install MySQL server
-  apt:
+  ansible.builtin.apt:
     name:
       - mysql-server
       - python3-pymysql
@@ -8,42 +8,34 @@
     update_cache: yes
 
 - name: Start and enable MySQL
-  systemd:
+  ansible.builtin.systemd:
     name: mysql
     state: started
     enabled: yes
 
-- name: Set MySQL root password
-  mysql_user:
-    name: root
-    password: "{{ vault_mysql_root_password }}"
-    login_unix_socket: /var/run/mysqld/mysqld.sock
-    host_all: yes
-    state: present
+- name: Set MySQL root password via shell
+  ansible.builtin.shell: |
+    mysql -u root <<-EOSQL
+    ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ vault_mysql_root_password }}';
+    FLUSH PRIVILEGES;
+    EOSQL
+  ignore_errors: yes
 
 - name: Copy init.sql to server
-  template:
+  ansible.builtin.template:
     src: init.sql.j2
     dest: /tmp/init.sql
     mode: '0644'
 
 - name: Import init.sql schema
-  mysql_db:
-    name: crud_app
-    state: import
-    target: /tmp/init.sql
-    login_user: root
-    login_password: "{{ vault_mysql_root_password }}"
+  ansible.builtin.shell: >
+    mysql -u root -p{{ vault_mysql_root_password }} < /tmp/init.sql
+  ignore_errors: yes
 
-- name: Allow root to connect from anywhere
-  mysql_user:
-    name: root
-    password: "{{ vault_mysql_root_password }}"
-    priv: "*.*:ALL"
-    host: "%"
-    login_user: root
-    login_password: "{{ vault_mysql_root_password }}"
-    state: present
-
-- name: Flush privileges
-  command: mysql -u root -p{{ vault_mysql_root_password }} -e "FLUSH PRIVILEGES;"
+- name: Allow root remote access
+  ansible.builtin.shell: |
+    mysql -u root -p{{ vault_mysql_root_password }} <<-EOSQL
+    CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED WITH mysql_native_password BY '{{ vault_mysql_root_password }}';
+    GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+    FLUSH PRIVILEGES;
+    EOSQL
