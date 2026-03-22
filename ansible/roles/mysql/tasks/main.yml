@@ -21,13 +21,6 @@
     host_all: yes
     state: present
 
-- name: Create application database
-  mysql_db:
-    name: "{{ db_name }}"
-    state: present
-    login_user: root
-    login_password: "{{ vault_mysql_root_password }}"
-
 - name: Copy init.sql to server
   template:
     src: init.sql.j2
@@ -36,17 +29,17 @@
 
 - name: Import init.sql schema
   mysql_db:
-    name: "{{ db_name }}"
+    name: crud_app
     state: import
     target: /tmp/init.sql
     login_user: root
     login_password: "{{ vault_mysql_root_password }}"
 
-- name: Allow root to connect from app server
+- name: Allow root to connect from anywhere
   mysql_user:
     name: root
     password: "{{ vault_mysql_root_password }}"
-    priv: "{{ db_name }}.*:ALL"
+    priv: "*.*:ALL"
     host: "%"
     login_user: root
     login_password: "{{ vault_mysql_root_password }}"

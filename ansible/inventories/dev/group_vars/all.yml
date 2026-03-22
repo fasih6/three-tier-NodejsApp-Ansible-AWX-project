@@ -1,7 +1,7 @@
 env: dev
 node_port: 3000
-node_env: dev
-app_repo: "https://github.com/fasih6/3-tier-NodejsApp-project.git"
+node_env: development
+app_repo: "https://github.com/fasih6/three-tier-NodejsApp-Ansible-AWX-project.git"
 app_dir: /opt/app
 db_name: crud_app
 db_user: root
