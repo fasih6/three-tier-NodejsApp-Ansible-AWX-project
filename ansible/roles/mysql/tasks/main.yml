@@ -39,3 +39,9 @@
     GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
     EOSQL
+
+- name: Configure MySQL to listen on all interfaces
+  ansible.builtin.shell: |
+    sed -i 's/bind-address.*=.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
+    sed -i 's/mysqlx-bind-address.*=.*/mysqlx-bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
+  notify: restart mysql
