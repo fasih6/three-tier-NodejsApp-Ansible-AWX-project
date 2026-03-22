@@ -1,0 +1,18 @@
+---
+- name: Provision database tier
+  hosts: db
+  become: yes
+  roles:
+    - mysql
+
+- name: Provision app tier
+  hosts: app
+  become: yes
+  roles:
+    - nodejs
+
+- name: Provision web tier
+  hosts: web
+  become: yes
+  roles:
+    - nginx

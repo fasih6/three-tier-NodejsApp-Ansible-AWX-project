@@ -1,0 +1,21 @@
+[Unit]
+Description=MyApp Node.js Backend
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory={{ app_dir }}/api
+ExecStart=/usr/bin/node app.js
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV={{ node_env }}
+Environment=PORT={{ node_port }}
+Environment=DB_HOST={{ db_host }}
+Environment=DB_USER={{ db_user }}
+Environment=DB_PASSWORD={{ vault_db_password }}
+Environment=DB_NAME={{ db_name }}
+Environment=JWT_SECRET={{ vault_jwt_secret }}
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,56 @@
+---
+- name: Install MySQL server
+  apt:
+    name:
+      - mysql-server
+      - python3-pymysql
+    state: present
+    update_cache: yes
+
+- name: Start and enable MySQL
+  systemd:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: Set MySQL root password
+  mysql_user:
+    name: root
+    password: "{{ vault_mysql_root_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    host_all: yes
+    state: present
+
+- name: Create application database
+  mysql_db:
+    name: "{{ db_name }}"
+    state: present
+    login_user: root
+    login_password: "{{ vault_mysql_root_password }}"
+
+- name: Copy init.sql to server
+  template:
+    src: init.sql.j2
+    dest: /tmp/init.sql
+    mode: '0644'
+
+- name: Import init.sql schema
+  mysql_db:
+    name: "{{ db_name }}"
+    state: import
+    target: /tmp/init.sql
+    login_user: root
+    login_password: "{{ vault_mysql_root_password }}"
+
+- name: Allow root to connect from app server
+  mysql_user:
+    name: root
+    password: "{{ vault_mysql_root_password }}"
+    priv: "{{ db_name }}.*:ALL"
+    host: "%"
+    login_user: root
+    login_password: "{{ vault_mysql_root_password }}"
+    state: present
+
+- name: Flush privileges
+  command: mysql -u root -p{{ vault_mysql_root_password }} -e "FLUSH PRIVILEGES;"

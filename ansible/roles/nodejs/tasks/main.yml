@@ -1,0 +1,37 @@
+---
+- name: Install Node.js 18
+  shell: |
+    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+    apt-get install -y nodejs
+  args:
+    creates: /usr/bin/node
+
+- name: Install git
+  apt:
+    name: git
+    state: present
+
+- name: Clone app repo
+  git:
+    repo: "{{ app_repo }}"
+    dest: "{{ app_dir }}"
+    version: main
+    force: yes
+
+- name: Install backend dependencies
+  npm:
+    path: "{{ app_dir }}/api"
+
+- name: Deploy systemd service file
+  template:
+    src: app.service.j2
+    dest: /etc/systemd/system/myapp.service
+    mode: '0644'
+  notify: restart myapp
+
+- name: Start and enable myapp service
+  systemd:
+    name: myapp
+    state: started
+    enabled: yes
+    daemon_reload: yes

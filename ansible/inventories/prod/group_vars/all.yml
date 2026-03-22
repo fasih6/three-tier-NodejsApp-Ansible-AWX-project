@@ -1,0 +1,10 @@
+env: prod
+node_port: 3000
+node_env: production
+app_repo: "https://github.com/fasih6/3-tier-NodejsApp-project.git"
+app_dir: /opt/app
+db_name: crud_app_prod
+db_user: root
+db_host: "{{ groups['db'][0] }}"
+db_password: "{{ vault_db_password }}"
+jwt_secret: "{{ vault_jwt_secret }}"
