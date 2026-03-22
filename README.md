@@ -1,5 +1,7 @@
 # 3-Tier Node.js App Provisioning with Ansible & AWX on AWS
 
+Built an automated 3-tier application deployment system using Ansible and AWX that provisions and configures frontend, backend, and database servers on AWS with environment-based configurations and secure secret management.
+
 ![Ansible](https://img.shields.io/badge/Ansible-EE0000?style=flat&logo=ansible&logoColor=white)
 ![AWX](https://img.shields.io/badge/AWX-EE0000?style=flat&logo=ansible&logoColor=white)
 ![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat&logo=amazonaws&logoColor=white)
