@@ -9,9 +9,9 @@ This document covers the complete AWS infrastructure setup for the 3-tier Node.j
 The infrastructure uses a custom VPC with public and private subnets to properly separate internet-facing resources from backend services. Four EC2 instances are deployed — one for AWX (the Ansible orchestrator), one for the web server, and two for the backend application and database in the private subnet.
 
 ---
-![vpc_architecture](../../pictures/vpc_architecture.png)
+![vpc_architecture](../pics/pictures/vpc_architecture.png)
 ---
-![aws_vpc_setup](../../pictures/aws_vpc_setup.png)
+![aws_vpc_setup](../pics/pictures/aws_vpc_setup.png)
 ---
 
 ## Architecture
