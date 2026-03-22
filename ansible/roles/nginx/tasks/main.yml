@@ -1,62 +1,67 @@
 ---
 - name: Install Nginx
-  apt:
+  ansible.builtin.apt:
     name: nginx
     state: present
     update_cache: yes
 
 - name: Install Node.js 18
-  shell: |
+  ansible.builtin.shell: |
     curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
     apt-get install -y nodejs
   args:
     creates: /usr/bin/node
 
 - name: Install git
-  apt:
+  ansible.builtin.apt:
     name: git
     state: present
 
 - name: Clone app repo
-  git:
+  ansible.builtin.git:
     repo: "{{ app_repo }}"
     dest: "{{ app_dir }}"
     version: main
     force: yes
 
 - name: Install frontend dependencies
-  npm:
-    path: "{{ app_dir }}/client"
+  ansible.builtin.shell: |
+    cd {{ app_dir }}/client
+    npm install
+  args:
+    creates: "{{ app_dir }}/client/node_modules"
 
 - name: Build React frontend
-  shell: npm run build
-  args:
-    chdir: "{{ app_dir }}/client"
+  ansible.builtin.shell: |
+    cd {{ app_dir }}/client
+    npm run build
   environment:
     CI: "false"
+  args:
+    creates: "{{ app_dir }}/client/build"
 
 - name: Deploy Nginx config
-  template:
+  ansible.builtin.template:
     src: nginx.conf.j2
     dest: /etc/nginx/sites-available/myapp
     mode: '0644'
   notify: reload nginx
 
 - name: Enable site
-  file:
+  ansible.builtin.file:
     src: /etc/nginx/sites-available/myapp
     dest: /etc/nginx/sites-enabled/myapp
     state: link
   notify: reload nginx
 
 - name: Remove default nginx site
-  file:
+  ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default
     state: absent
   notify: reload nginx
 
 - name: Ensure nginx is started and enabled
-  systemd:
+  ansible.builtin.systemd:
     name: nginx
     state: started
     enabled: yes
