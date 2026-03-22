@@ -8,8 +8,8 @@ This document covers the complete AWX installation and configuration for the 3-t
 ## AWX in simple terms
 
 AWX = Web-based UI + API for Ansible
-
 It does not replace Ansible — it just makes Ansible easier to manage and run.
+
 ---
 ## Why AWX?
 
