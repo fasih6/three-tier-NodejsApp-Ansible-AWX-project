@@ -5,7 +5,12 @@ This document covers the complete AWX installation and configuration for the 3-t
 ---
 ![awx_setup](../../pics/pictures/awx_control_flow.png)
 ---
+## AWX in simple terms
 
+AWX = Web-based UI + API for Ansible
+
+It does not replace Ansible — it just makes Ansible easier to manage and run.
+---
 ## Why AWX?
 
 When you first learn Ansible, you run playbooks from your local terminal like this:
